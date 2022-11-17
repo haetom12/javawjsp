@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/atom")
+//@WebServlet("/T2") 컨트롤러가 다른곳에 같은이름의 컨트롤러가 있으면 오류뜸
 public class Test3 extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
