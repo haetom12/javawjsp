@@ -1,4 +1,4 @@
-<%@page import="j1116h.ProductVO"%>
+<%@page import="study.j1116h.ProductVO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <div class="text-center">
   <a href="${pageContext.request.contextPath}/j1116h/Main?sw=main">홈으로</a> |
