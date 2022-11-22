@@ -7,48 +7,52 @@ public class JusorokVO {
 	private String name;
 	private int point;
 	private String lastDate;
-	
-	
-	int getIdx() {
+	private int daycount;
+	public int getIdx() {
 		return idx;
 	}
-	void setIdx(int idx) {
+	public void setIdx(int idx) {
 		this.idx = idx;
 	}
-	String getMid() {
+	public String getMid() {
 		return mid;
 	}
-	void setMid(String mid) {
+	public void setMid(String mid) {
 		this.mid = mid;
 	}
-	String getPwd() {
+	public String getPwd() {
 		return pwd;
 	}
-	void setPwd(String pwd) {
+	public void setPwd(String pwd) {
 		this.pwd = pwd;
 	}
-	String getName() {
+	public String getName() {
 		return name;
 	}
-	void setName(String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
-	int getPoint() {
+	public int getPoint() {
 		return point;
 	}
-	void setPoint(int point) {
+	public void setPoint(int point) {
 		this.point = point;
 	}
-	String getLastDate() {
+	public String getLastDate() {
 		return lastDate;
 	}
-	void setLastDate(String lastDate) {
+	public void setLastDate(String lastDate) {
 		this.lastDate = lastDate;
+	}
+	public int getDaycount() {
+		return daycount;
+	}
+	public void setDaycount(int daycount) {
+		this.daycount = daycount;
 	}
 	@Override
 	public String toString() {
 		return "JusorokVO [idx=" + idx + ", mid=" + mid + ", pwd=" + pwd + ", name=" + name + ", point=" + point
-				+ ", lastDate=" + lastDate + "]";
+				+ ", lastDate=" + lastDate + ", daycount=" + daycount + "]";
 	}
-
 }

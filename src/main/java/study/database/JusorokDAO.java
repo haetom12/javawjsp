@@ -23,9 +23,9 @@ public class JusorokDAO {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(url, user, password);	
+			conn = DriverManager.getConnection(url, user, password);
 		} catch (ClassNotFoundException e) {
-			System.out.println("드라이버 검색 실패~~~~");
+			System.out.println("드라이버 검색 실패~~");
 		} catch (SQLException e) {
 			System.out.println("Database 연동 실패~~");
 		}
@@ -41,7 +41,7 @@ public class JusorokDAO {
 	}
 	
 	public void rsClose() {
-		if(rs !=null) {
+		if(rs != null) {
 			try {
 				rs.close();
 				pstmtClose();
@@ -49,9 +49,9 @@ public class JusorokDAO {
 		}
 	}
 
-	// 로그인 체크 처리
+	// 로그인 체크처리
 	public JusorokVO loginCheck(String mid, String pwd) {
-		vo = new JusorokVO();  //위에 vo 선언해놨음
+		vo = new JusorokVO();
 		try {
 			sql = "select * from jusorok where mid=? and pwd=?";
 			pstmt = conn.prepareStatement(sql);
@@ -60,29 +60,31 @@ public class JusorokDAO {
 			rs = pstmt.executeQuery();
 			
 			if(rs.next()) {
-				vo.setIdx(rs.getInt("idx"));				
+				vo.setIdx(rs.getInt("idx"));
 				vo.setMid(rs.getString("mid"));
 				vo.setPwd(rs.getString("pwd"));
 				vo.setName(rs.getString("name"));
 				vo.setPoint(rs.getInt("point"));
 				vo.setLastDate(rs.getString("lastDate"));
+				vo.setDaycount(rs.getInt("daycount"));
 			}
 		} catch (SQLException e) {
 			System.out.println("SQL 오류 : " + e.getMessage());
 		} finally {
 			rsClose();
-		}	
+		}
 		return vo;
 	}
 
-	//로그아웃처리
+	// 로그아웃처리
 	public void logout() {
-		// 종료전에 DB에 처리해야할 
+	  // 종료전에 DB에 처리해야 할 내용들을 기록...
+		
 	}
 
-	//회원 정보 조회
+	// 회원 정보 조회
 	public JusorokVO getMemberSearch(String mid) {
-		vo = new JusorokVO();  //위에 vo 선언해놨음
+		vo = new JusorokVO();
 		try {
 			sql = "select * from jusorok where mid=?";
 			pstmt = conn.prepareStatement(sql);
@@ -90,37 +92,40 @@ public class JusorokDAO {
 			rs = pstmt.executeQuery();
 			
 			if(rs.next()) {
-				vo.setIdx(rs.getInt("idx"));				
+				vo.setIdx(rs.getInt("idx"));
 				vo.setMid(rs.getString("mid"));
 				vo.setPwd(rs.getString("pwd"));
 				vo.setName(rs.getString("name"));
 				vo.setPoint(rs.getInt("point"));
 				vo.setLastDate(rs.getString("lastDate"));
+				vo.setDaycount(rs.getInt("daycount"));
 			}
 		} catch (SQLException e) {
 			System.out.println("SQL 오류 : " + e.getMessage());
 		} finally {
 			rsClose();
-		}	
+		}
 		return vo;
 	}
 
-	// 방문포인터증가와 최종방문일자 업데이트
-	public void setVisitUpdate(int visitPoint, String mid) {
+	// 방문포인터증가와 최종방문일자 업데이트작업
+	public void setVisitUpdate(int visitPoint, int visitCount, String mid) {
 		try {
-			sql = "update jusorok set point=?, lastDate=now() where mid=? ";
+			sql = "update jusorok set point=? ,lastDate=now(), daycount=? where mid=?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, visitPoint);
-			pstmt.setString(2, mid);
+			pstmt.setInt(2, visitCount);
+			pstmt.setString(3, mid);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			System.out.println("SQL 오류 : " + e.getMessage());
 		} finally {
 			pstmtClose();
-		}	
+		}
+		
 	}
-	
-	//회원 가입처리
+
+	// 회원 가입처리
 	public int setJoinOk(JusorokVO vo) {
 		int res = 0;
 		try {
@@ -139,10 +144,9 @@ public class JusorokDAO {
 		return res;
 	}
 
-	//전체 회원 조회하기
-	public ArrayList<JusorokVO> getmemberList() {
+	// 전체 회원 조회하기
+	public ArrayList<JusorokVO> getMemberList() {
 		ArrayList<JusorokVO> vos = new ArrayList<>();
-		
 		try {
 			sql = "select * from jusorok order by idx desc";
 			pstmt = conn.prepareStatement(sql);
@@ -159,7 +163,6 @@ public class JusorokDAO {
 				
 				vos.add(vo);
 			}
-			
 		} catch (SQLException e) {
 			System.out.println("SQL 오류 : " + e.getMessage());
 		} finally {
@@ -167,4 +170,44 @@ public class JusorokDAO {
 		}
 		return vos;
 	}
+
+//	// 아이디 중복 체크
+//	public JusorokVO checkId(String mid) {
+//		vo = new JusorokVO();
+//		try {
+//			sql = "select * from jusorok where mid=?";
+//			pstmt = conn.prepareStatement(sql);
+//			pstmt.setString(1, mid);
+//			rs = pstmt.executeQuery();
+//			
+//			if(rs.next()) {
+//				vo.setMid(rs.getString("mid"));
+//			}
+//		} catch (SQLException e) {
+//			System.out.println("SQL 오류 : " + e.getMessage());
+//		} finally {
+//			rsClose();
+//		}
+//		return vo;
+//	}
+
+	public int Idcheck(String mid) {
+		int res = 0;
+		vo = new JusorokVO();
+		try {
+			sql = "select * from jusorok where mid=?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, mid);
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				res = 1;
+			}
+		} catch (SQLException e) {
+			System.out.println("SQL 오류 : " + e.getMessage());
+		} finally {
+			rsClose();
+		}
+		return res;
+	}	
 }

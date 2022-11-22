@@ -16,7 +16,7 @@
       </tr>
       <tr>
         <th class="bg-primary text-white">아이디</th>
-        <td><input type="text" name="mid"  autofocus required class="form-control"/></td>
+        <td><input type="text" name="mid" autofocus required class="form-control"/></td>
       </tr>
       <tr>
         <th class="bg-primary text-white">비밀번호</th>

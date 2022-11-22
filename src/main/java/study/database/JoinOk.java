@@ -19,30 +19,41 @@ public class JoinOk extends HttpServlet {
 		
 		JusorokVO vo = new JusorokVO();
 		
+		PrintWriter out = response.getWriter();
+		
 		vo.setMid(mid);
 		vo.setPwd(pwd);
 		vo.setName(name);
 		
 		JusorokDAO dao = new JusorokDAO();
 		
-		//아이디 중복체크...(숙제)
+
+		// 아이디 중복체크........
+		int idcheck = dao.Idcheck(mid);
 		
-		
-		//중복체크후 정상자료일경우 DB에 저장처리
-		int res = dao.setJoinOk(vo);
-		
-		PrintWriter out = response.getWriter();
-		if(res==1) {
-			out.print("<script>"
-							+ "alert('"+mid+"님 회원가입을 환영합니다.');"
-							+ "location.href='"+request.getContextPath()+"/study/1120_Database/login.jsp';"
-							+ "</script>");
-		}
-		else {
+		if(idcheck == 1) {
 			out.println("<script>");
-			out.println("alert('회원가입 실패~ 다시 회원에 가입해 주세요.')");
+			out.println("alert('존재하는 아이디입니다!');");
 			out.println("location.href='"+request.getContextPath()+"/study/1120_Database/join.jsp';");
 			out.println("</script>");
+		}
+		else {
+			// 중복체크후 정상자료일경우 DB에 저장처리
+			
+			int res = dao.setJoinOk(vo);
+			
+			if(res == 1) {
+				out.println("<script>"
+						+ "alert('"+mid+"님 회원가입을 환영합니다.');"
+						+ "location.href='"+request.getContextPath()+"/study/1120_Database/login.jsp';"
+						+ "</script>");
+			}
+			else {
+				out.println("<script>");
+				out.println("alert('회원가입 실패~ 다시 회원에 가입해 주세요.');");
+				out.println("location.href='"+request.getContextPath()+"/study/1120_Database/join.jsp';");
+				out.println("</script>");
+			}		
 		}
 	}
 }

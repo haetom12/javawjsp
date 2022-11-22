@@ -1,7 +1,6 @@
-package study.database;
+package study.el_jstl;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -10,17 +9,22 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/database/MemberList")
-public class MemberList extends HttpServlet {
+@SuppressWarnings("serial")
+@WebServlet("/study/el_jstl/El2")
+public class El2 extends HttpServlet{
+	
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		JusorokDAO dao = new JusorokDAO();
+
+		String[] hobbys = request.getParameterValues("hobby");  //null처리 나중에 하기
+
 		
-		ArrayList<JusorokVO> vos = dao.getMemberList();
+		request.setAttribute("hobbys", hobbys);
 		
-		request.setAttribute("vos", vos);
-		
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/study/1120_Database/memberList.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/study/1121_EL_JSTL/el2.jsp");
 		dispatcher.forward(request, response);
 	}
+	
+	
+	
 }

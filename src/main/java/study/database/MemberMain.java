@@ -22,7 +22,8 @@ public class MemberMain extends HttpServlet {
 		
 		JusorokVO vo = dao.getMemberSearch(mid);
 		
-		request.setAttribute("point",vo.getPoint());
+		request.setAttribute("point", vo.getPoint());
+		request.setAttribute("daycount", vo.getDaycount());
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/study/1120_Database/member.jsp");
 		dispatcher.forward(request, response);

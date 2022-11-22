@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8">
   <title>memberList.jsp</title>
-  <jsp:include page="../../include/bs4.jsp"></jsp:include>
+  <jsp:include page="../../../include/bs4.jsp"></jsp:include>
 </head>
 <body>
 <p><br/></p>
@@ -33,7 +33,7 @@
 		</c:forEach>
   </table>
   <br/>
-  <div><a href="${pageContext.request.contextPath}/study/1120_Database/member.jsp" class="btn btn-success">돌아가기</a></div>
+  <div><a href="${pageContext.request.contextPath}/mapping2/Calc.calc" class="btn btn-warning">돌아가기</a></div>
 </div>
 <p><br/></p>
 </body>
