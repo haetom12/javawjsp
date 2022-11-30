@@ -135,5 +135,24 @@ public class GuestDAO {
 		}
 		return totRecCnt;
 	}
-	
+
+	// 로그인한 사람의 방명록 총건수 가져오기
+	public int totRecCnt2(String name) {
+		int totRecCnt = 0;
+		try {
+			sql = "select count(*) as cnt from guest where name=?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, name);
+			rs = pstmt.executeQuery();
+			
+			rs.next();
+//			totRecCnt = rs.getInt(1); //필드 순번(count가 가장먼저있음)
+			totRecCnt = rs.getInt("cnt"); // as로 별명 부여
+		} catch (SQLException e) {
+			System.out.println("SQL 에러 : " + e.getMessage());
+		} finally {
+			rsClose();
+		}
+		return totRecCnt;
+	}
 }
