@@ -59,6 +59,7 @@
     <tr><td colspan="5" class="m-0 p-0"></td></tr>
   </table>
   <br />
+  <!-- 블록페이지 시작 -->
   <div class="text-center">
 		<ul class="pagination justify-content-center">
 	    <c:if test="${pag > 1}">

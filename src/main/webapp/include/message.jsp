@@ -35,6 +35,13 @@
     else if(msg == "memUpdateNo") msg = "회원정보가 변경실패!";
     else if(msg == "levelCheckOk") msg = "회원 등급이 변경되었습니다.";
     else if(msg == "memberDelOk") msg = "정상적으로 회원탈퇴 되셨습니다.";
+    else if(msg == "boInputOk") msg = "게시글이 입력되었습니다.";
+    else if(msg == "boInputNo") msg = "게시글이 일력취소되었습니다.";
+    else if(msg == "boDeleteOk") msg = "게시글이 삭제되었습니다.";
+    else if(msg == "boDeleteNo") msg = "게시글이 삭제 실패~~";
+    else if(msg == "userCheckNO") msg = "정상적인 사용자가 아닙니다 ~~~ !!";
+    else if(msg == "boUpdateOk") msg = "게시글이 수정되었습니다!!";
+    else if(msg == "boUpdateNo") msg = "게시글이 수정 실패!!";
     
     alert(msg);
     if(url != "") location.href = url;
