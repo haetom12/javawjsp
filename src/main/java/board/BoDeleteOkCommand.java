@@ -1,6 +1,7 @@
 package board;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +23,6 @@ public class BoDeleteOkCommand implements BoardInterface {
 				request.setAttribute("url", request.getContextPath()+"/");
 				return;
 			}
-			
 		}
 		
 		int idx = request.getParameter("idx")==null ? 0 : Integer.parseInt(request.getParameter("idx"));
@@ -31,16 +31,26 @@ public class BoDeleteOkCommand implements BoardInterface {
 		
 		BoardDAO dao = new BoardDAO();
 		
-		int res = dao.setBoDeleteOk(idx);
+		System.out.println("원래 게시물 idx : " + idx);
+		int cnt = dao.getReplycount(idx);
+		System.out.println(cnt);
 		
-		if(res == 1) {
-			request.setAttribute("msg", "boDeleteOk");
-			request.setAttribute("url", request.getContextPath()+"/boList.bo?pag="+pag+"&pageSize="+pageSize);
-		}
-		else {
-			request.setAttribute("msg", "boDeleteNo");
+		// 게시물에 댓글있으면 삭제 X
+		if(cnt != 0) {
+			request.setAttribute("msg", "boDeleteNo2");
 			request.setAttribute("url", request.getContextPath()+"/boContent.bo?idx="+idx+"&pag="+pag+"&pageSize="+pageSize);
 		}
+		else {
+			int res = dao.setBoDeleteOk(idx);
+			
+			if(res == 1) {
+				request.setAttribute("msg", "boDeleteOk");
+				request.setAttribute("url", request.getContextPath()+"/boList.bo?pag="+pag+"&pageSize="+pageSize);
+			}
+			else {
+				request.setAttribute("msg", "boDeleteNo");
+				request.setAttribute("url", request.getContextPath()+"/boContent.bo?idx="+idx+"&pag="+pag+"&pageSize="+pageSize);
+			}
+		}
 	}
-
 }

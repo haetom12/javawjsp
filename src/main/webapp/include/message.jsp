@@ -42,6 +42,13 @@
     else if(msg == "userCheckNO") msg = "정상적인 사용자가 아닙니다 ~~~ !!";
     else if(msg == "boUpdateOk") msg = "게시글이 수정되었습니다!!";
     else if(msg == "boUpdateNo") msg = "게시글이 수정 실패!!";
+    else if(msg == "upLoad1Ok") msg = "파일 업로드 성공!!!";
+    else if(msg == "upLoad1No") msg = "파일 업로드 실패~~~~";
+    else if(msg == "boDeleteNo2") msg = "게시물에 댓글이 있어 삭제할수 없습니다!";
+    else if(msg == "pdsInputOk") msg = "자료실에 파일이 업로드 되었습니다.";
+    else if(msg == "pdsInputNo") msg = "자료실에 파일 업로드 실패~~";
+    else if(msg == "pdsDeleteOk") msg = "자료실 파일을 삭제하였습니다!";
+    else if(msg == "pdsDeleteNo") msg = "자료실 파일 삭제 실패~~";
     
     alert(msg);
     if(url != "") location.href = url;

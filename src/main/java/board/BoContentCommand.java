@@ -70,6 +70,8 @@ public class BoContentCommand implements BoardInterface {
 		ArrayList<BoardReplyVO> replyVos = dao.getBoReply(idx);
 		
 		request.setAttribute("replyVos", replyVos);
+		//d5fa6e6aaabeb6fd62fb97fd757cb29b688d77ff4b4a2b1a47c9adcc0f249898
+		//d5fa6e6aaabeb6fd62fb97fd757cb29b688d77ff4b4a2b1a47c9adcc0f249898
 		
 //		System.out.println("preVo : " + preVo);
 //		System.out.println("nextVo : " + nextVo);

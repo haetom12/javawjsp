@@ -51,7 +51,10 @@
     <c:forEach var="vo" items="${vos}">
     	<tr>
     	  <td>${searchCount}</td>
-    	  <td class="text-left"><a href="${ctp}/boContent.bo?flag=search&search=${search}&searchString=${searchString}&idx=${vo.idx}&pageSize=${pageSize}&pag=${pag}">${vo.title}</a><c:if test="${vo.hour_diff <= 24}"><img src="${ctp}/images/new.gif"/></c:if></td>
+    	 <td class="text-left"><a href="${ctp}/boContent.bo?idx=${vo.idx}&pageSize=${pageSize}&pag=${pag}">${vo.title}</a>
+	    	  <c:if test="${vo.replyCnt != 0}">(${vo.replyCnt})</c:if> 
+	    	  <c:if test="${vo.hour_diff <= 24}"><img src="${ctp}/images/new.gif"/></c:if>
+    	  </td>
     	  <td>${vo.nickName}</td>
     	  <td>${vo.wDate}</td>
     	  <td>${vo.readNum}</td>

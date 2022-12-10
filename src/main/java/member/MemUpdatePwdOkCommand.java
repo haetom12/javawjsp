@@ -14,10 +14,10 @@ public class MemUpdatePwdOkCommand implements MemberInterface {
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
-		String mid = (String) session.getAttribute("sMid");
 		
-		String oldPwd = request.getParameter("oldPwd")==null ? "" :  request.getParameter("oldPwd");
-		String newPwd = request.getParameter("newPwd")==null ? "" :  request.getParameter("newPwd");
+		String mid = (String) session.getAttribute("sMid");
+		String oldPwd = request.getParameter("oldPwd")==null? "" : request.getParameter("oldPwd");
+		String newPwd = request.getParameter("newPwd")==null? "" : request.getParameter("newPwd");
 		
 		SecurityUtil security = new SecurityUtil();
 		oldPwd = security.encryptSHA256(oldPwd);
@@ -27,21 +27,22 @@ public class MemUpdatePwdOkCommand implements MemberInterface {
 		
 		MemberVO vo = dao.getLoginCheck(mid);
 		
-		if(!vo.getPwd().equals(oldPwd)) { // 사용 가능한 닉네임
-			request.setAttribute("msg", "passworkNo");
-			request.setAttribute("url", request.getContextPath()+"/memberUpdatePwd.mem");
+		if(!vo.getPwd().equals(oldPwd)) {
+			request.setAttribute("msg", "passwordNo");
+			request.setAttribute("url", request.getContextPath()+"/memUpdatePwd.mem");
 			return;
 		}
-		int res = dao.setMemUpdatePwdOk(mid,newPwd);
 		
-		if(res==1) {
+		int res = dao.setMemUpdatePwdOk(mid, newPwd);
+		
+		if(res == 1) {
 			request.setAttribute("msg", "passwordOk");
-			request.setAttribute("url", request.getContextPath()+"/memMain.mem");			
+			request.setAttribute("url", request.getContextPath()+"/memMain.mem");
 		}
 		else {
 			request.setAttribute("msg", "passwordOkNo");
-			request.setAttribute("url", request.getContextPath()+"/memberUpdatePwd.mem");
-			return;
+			request.setAttribute("url", request.getContextPath()+"/memUpdatePwd.mem");
 		}
 	}
+
 }

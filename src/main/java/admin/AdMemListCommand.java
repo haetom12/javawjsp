@@ -6,22 +6,19 @@ import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import member.MemberDAO;
 import member.MemberVO;
 
 public class AdMemListCommand implements AdminInterface {
 
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 		AdminDAO dao = new AdminDAO();
 		
 		// 페이징처리 준비 시작
 		int pag = request.getParameter("pag")==null ? 1 : Integer.parseInt(request.getParameter("pag"));
 		int pageSize = 5;
-		int totRecCnt = dao.totRecCnt();
+		int totRecCnt = dao.totRecCnt("");
 		int totPage = (totRecCnt % pageSize)==0 ? totRecCnt / pageSize : (totRecCnt / pageSize) + 1;
 		int startIndexNo = (pag - 1) * pageSize;
 		int curScrStartNo = totRecCnt - startIndexNo;
@@ -31,7 +28,7 @@ public class AdMemListCommand implements AdminInterface {
 		int curBlock = (pag - 1) / blockSize;
 		int lastBlock = (totPage - 1) / blockSize;
 		
-		ArrayList<AdminVO> vos = dao.getMemList(startIndexNo, pageSize);
+		ArrayList<MemberVO> vos = dao.getMemList(startIndexNo, pageSize);
 		
 		request.setAttribute("vos", vos);
 		request.setAttribute("pag", pag);
@@ -40,6 +37,6 @@ public class AdMemListCommand implements AdminInterface {
 		request.setAttribute("blockSize", blockSize);
 		request.setAttribute("curBlock", curBlock);
 		request.setAttribute("lastBlock", lastBlock);
-
 	}
+
 }

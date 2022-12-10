@@ -204,12 +204,12 @@
 
 <!-- 댓글 리스트보여주기 -->
 <div class="container">
-	<table class="table table-hover text-center">
-	  <tr>
+	<table class="table table-hover text-left">
+	  <tr style="background-color:#eee">
 	    <th>작성자</th>
 	    <th>댓글내용</th>
-	    <th>작성일자</th>
-	    <th>접속IP</th>
+	    <th class= "text-center">작성일자</th>
+	    <th class= "text-center">접속IP</th>
 	  </tr>
 	  <c:forEach var="replyVo" items="${replyVos}">
 	    <tr>
@@ -218,9 +218,11 @@
 		      	(<font color="red"><a href="javascript:replyDelCheck(${replyVo.idx})" title="삭제하기">x</a></font>)
 		      </c:if>
 	      </td>
-	      <td>${replyVo.content}</td>
-	      <td>${replyVo.wDate}</td>
-	      <td>${replyVo.hostIp}</td>
+	      <td>
+	      	${fn:replace(replyVo.content,newLine,"<br/>")}
+	      </td>
+	      <td class= "text-center">${replyVo.wDate}</td>
+	      <td class= "text-center">${replyVo.hostIp}</td>
 	    </tr>
 	  </c:forEach>
 	</table>

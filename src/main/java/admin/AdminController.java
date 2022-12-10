@@ -38,13 +38,6 @@ public class AdminController extends HttpServlet {
 			command.execute(request, response);
 			viewPage += "/member/adMemList.jsp";
 		}
-		
-		// 관리자 홈페이지 메인에 회원탈퇴신청한 사람들
-		else if(com.equals("/adMemList2")) {
-			command = new AdMemListCommand2();
-			command.execute(request, response);
-			viewPage += "/adContent.jsp";
-		}
 		else if(com.equals("/adMemInfor")) {
 			command = new MemInforCommand();
 			command.execute(request, response);
@@ -55,27 +48,22 @@ public class AdminController extends HttpServlet {
 			command.execute(request, response);
 			viewPage += "/member/adMemList.jsp";
 		}
-		// 관리자 홈페이지 메인에 회원탈퇴신청한 사람들 검색
-		else if(com.equals("/adMemberSearch2")) {
-			command = new AdMemberSearchCommand2();
-			command.execute(request, response);
-			viewPage += "/adContent.jsp";
-		}
-		else if(com.equals("/AdMemberLevel")) {
+		else if(com.equals("/adMemberLevel")) {
 			command = new AdMemberLevelCommand();
 			command.execute(request, response);
 			viewPage = "/include/message.jsp";
 		}
-		else if(com.equals("/AdMemberDel")) {
+		else if(com.equals("/adMemberLevelAjax")) {
+			// command = new AdMemberLevelAjaxCommand();
+			command = new AdMemberLevelCommand();
+			command.execute(request, response);
+			return;
+		}
+		else if(com.equals("/adMemberDel")) {
 			command = new AdMemberDelCommand();
 			command.execute(request, response);
 			viewPage = "/include/message.jsp";
 		}
-//		else if(com.equals("/memUpdateOk")) {
-//			command = new MemUpdateOkCommand();
-//			command.execute(request, response);
-//			viewPage = "/include/message.jsp";
-//		}
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher(viewPage);
 		dispatcher.forward(request, response);

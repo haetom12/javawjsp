@@ -27,12 +27,20 @@ create table member (
 	primary key(idx,mid)           		  /* 주키: idx(고유번호), mid(아이디) */
 );
 
+
+
+
+
+
+
+
+
 select * from member;
 
 desc member;
 
 --drop table member;
---delete from member where idx=1;
+--delete from member where idx=19;
 
 insert into member values (default, 'admin', '1234', '관리맨','관리자', default, default, '010-5718-5014', '세종특별자치시', 'haetom@naver.com', 'https://www.naver.com', '학생', '볼링/게임', default, '관리자입니다.', default,default,default,0,default,default,default,default );
 insert into member values (default, 'haetom', '1454', '해찬들','천해찬', default, default, '010-5718-5014', '세종특별자치시', 'haetom@naver.com', 'https://www.naver.com', '학생', '볼링/게임', default, '관리자입니다.', default,default,default,0,default,default,default,default );

@@ -43,9 +43,16 @@ public class BoardDAO {
 		ArrayList<BoardVO> vos = new ArrayList<>();
 		try {
 			// sql = "select *, datediff(now(), wDate) as day_diff from board order by idx desc limit ?,?";
+			/*
 			sql = "select *,datediff(now(), wDate) as day_diff,"
 					+ " timestampdiff(hour, wDate, now()) as hour_diff"
 					+ " from board order by idx desc limit ?,?";
+			*/
+			sql = "SELECT *, datediff(now(), wDate) as day_diff, "
+					+ " timestampdiff(hour, wDate, now()) as hour_diff, "
+					+ "(SELECT count(*) FROM boardReply WHERE boardIdx = b.idx) as replyCnt "
+					+ "FROM board b order by idx desc "
+					+ "limit ?,?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, startIndexNo);
 			pstmt.setInt(2, pageSize);
@@ -67,6 +74,7 @@ public class BoardDAO {
 				
 				vo.setDay_diff(rs.getInt("day_diff"));
 				vo.setHour_diff(rs.getInt("hour_diff"));
+				vo.setReplyCnt(rs.getInt("replyCnt"));
 				
 				vos.add(vo);
 			}
@@ -245,7 +253,15 @@ public class BoardDAO {
 	public ArrayList<BoardVO> getBoContentSearch(String search, String searchString) {
 		ArrayList<BoardVO> vos = new ArrayList<>();
 		try {
-			sql = "select * from board where "+search+" like ? order by idx desc";
+//			sql = "select * from board where "+search+" like ? order by idx desc";
+			
+			sql = "SELECT *, datediff(now(), wDate) as day_diff, "
+					+ " timestampdiff(hour, wDate, now()) as hour_diff, "
+					+ "(SELECT count(*) FROM boardReply WHERE boardIdx = b.idx) as replyCnt "
+					+ "FROM board b where "+search+" like ? order by idx desc";
+//					+ "limit ?,?";
+			
+			
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, "%"+searchString+"%");
 			rs = pstmt.executeQuery();
@@ -264,8 +280,9 @@ public class BoardDAO {
 				vo.setGood(rs.getInt("good"));
 				vo.setMid(rs.getString("mid"));
 				
-//				vo.setDay_diff(rs.getInt("day_diff"));
-//				vo.setHour_diff(rs.getInt("hour_diff"));
+				vo.setDay_diff(rs.getInt("day_diff"));
+				vo.setHour_diff(rs.getInt("hour_diff"));
+				vo.setReplyCnt(rs.getInt("replyCnt"));
 				
 				vos.add(vo);
 			}
@@ -347,4 +364,24 @@ public class BoardDAO {
 		return res;
 	}
 
+	// 삭제하기전 댓글 있는지 확인하기, 있으면 삭제 X
+	public int getReplycount(int idx) {
+		vo = new BoardVO();
+		int cnt = 0;
+		try {
+			sql = "SELECT count(*) as replyCnt FROM boardReply WHERE boardIdx = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, idx);
+			rs = pstmt.executeQuery();
+			
+			rs.next();
+			cnt = rs.getInt("replyCnt");
+		} catch (SQLException e) {
+			System.out.println("SQL 에러 : " + e.getMessage());
+		} finally {
+			getConn.rsClose();
+			System.out.println("cnt : " + cnt);
+		}
+		return cnt;
+	}
 }

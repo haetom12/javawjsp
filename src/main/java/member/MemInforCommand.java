@@ -31,4 +31,3 @@ public class MemInforCommand implements MemberInterface, AdminInterface {
 	}
 
 }
-

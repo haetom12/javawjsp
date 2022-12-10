@@ -37,8 +37,8 @@
     		alert("새 비밀번호와 동일한 비밀번호를 입력해 주세요.");
         myform.rePwd.focus();
     	}
-    	else if(newPwd = oldPwd) {
-    		alert("새 비밀번호와 기존 비밀번호가 동일합니다.");
+    	else if(newPwd == oldPwd) {
+    		alert("기존비밀번호와 새 비밀번호가 동일합니다.");
         myform.newPwd.focus();
     	}
     	else {

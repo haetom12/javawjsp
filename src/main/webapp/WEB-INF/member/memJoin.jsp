@@ -12,155 +12,147 @@
   <script src="${ctp}/js/woo.js"></script>
   <script>
     'use strict';
+    // 아이디와 닉네임 중복버튼을 클릭했는지를 확인하기위한 전역변수를 정의한다.(버튼클릭후에도 내용을 수정했다면 초기값은 0으로 셋팅해서 버튼을 누를수 있도록해야한다.)
+    let idCheckSw = 0;
+  	let nickCheckSw = 0;
+    
     // 회원가입폼 체크후 서버로 전송(submit)
     function fCheck() {
     	// 폼의 유효성 검사~~~~
-    /*	let regMid = /\w/gm;  //아이디는 영문소문자,대문자,숫자,밑줄만 사용가능
-      let regpwd = /\w/gm;  //아이디는 영문소문자,대문자,숫자,밑줄만 사용가능
-      let regName = /^[a-zA-Z가-힣]{2,20}$/gm; // 성명은 한글/영문만 가능하도록 길이는 2~20자까지
-      let regblank = /\s/g;  // 문장안에 공백 또는 탭을 포함하고 있느냐? */
-    		  
-      let regMid = /^[a-z0-9_]{4,20}$/;
+    	let regMid = /^[a-z0-9_]{4,20}$/;
       // let regPwd = /(?=.*[a-zA-Z])(?=.*?[#?!@$%^&*-]).{4,24}/;
-      let regPwd = /(?=.*[0-9a-zA-Z]).{4,24}/;
+      let regPwd = /(?=.*[0-9a-zA-Z]).{4,20}$/;
       let regNickName = /^[가-힣]+$/;
       let regName = /^[가-힣a-zA-Z]+$/;
       let regEmail =/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/;
       let regURL = /^(https?:\/\/)?([a-z\d\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?$/;
       let regTel = /\d{2,3}-\d{3,4}-\d{4}$/g;
-    		
-    	//  폼의 내용을 가져와서 유효성 검사....(아이디/비밀번호/성명은 모두 20자 이하...)
-    	let mid = myform.mid.value;
-      let pwd = myform.pwd.value;
-      let nickName = myform.nickName.value;
-      let name = document.getElementById("name").value;
-		  let email1 = myform.email1.value;
-		  let email2 = myform.email2.value;
-		  let gender = myform.gender.value;
-		  let birthday = myform.birthday.value;
-	    let tel1 = myform.tel1.value;
-	    let tel2 = myform.tel2.value;
-	    let tel3 = myform.tel3.value;
-	    let tel = tel1 + "-" + tel2 + "-" + tel3;
-	    let homePage = myform.homePage.value;
-	    /* let hobbyCount = document.getElementsByName("hobby").length;
-	    let hobby = "";
-		    for(let i=0; i<hobbyCount; i++) {
-		      if(document.getElementsByName("hobby")[i].checked) {
-		        hobby += document.getElementsByName("hobby")[i].value + "/";
-		      }
-		    }
-		    hobby = hobby.substring(0, hobby.length - 1); */
-	    let job = myform.job.value;
-	    let content = myform.content.value;
-	    let userInfor = myform.userInfor.value;
-	    
       
-      /* if(mid.trim() == "") {
-	  		alert("아이디를 입력하세요...");
-	  		document.getElementById("mid").focus();
-	  	}
-	  	else if(!mid.match(regMid)) {
-	  	  alert("아이디는 영문소문자,대문자,숫자,밑줄만 사용가능 합니다")
-	  	  return;
-	  	  }
-	  	else if(mid.match(regblank)) {
-	  		alert("아이디에 공백이 있습니다")
-	    	return;
-	  	}
-	    else if(pwd.trim()=="") {
-	      alert("비밀번호를 입력하세요")
-	      return;
-	      }
-	    else if(!pwd.match(regpwd)) {
-	      alert("비밀번호는 영문소문자,대문자,숫자,밑줄만 사용가능 합니다")
-	      return;
-	      } 
-	    else if(pwd.match(regblank)) {
-		  		alert("비밀번호에 공백이 있습니다")
-		    	return;
-		  	}
-	    else if(name.trim()=="") {
-	      alert("성함을 입력하세요")
-	      return;
-	    }
-	    else if(!name.match(regName)) {
-	      alert("성함는 영문소문자,대문자,한글만 사용가능 합니다")
-	      return;
-	    }
-	    else if(name.match(regblank)) {
-		  		alert("성함에 공백이 있습니다.")
-		    	return;
-		  	} */
+      let submitFlag = 0;		// 전송체크버튼으로 값이 1이면 체크완료되어 전송처리한다.
 
-    	// 숙제...
+      // 유효성검사를 위해 폼안의 내용들을 모두 변수에 담는다.
+    	let mid = myform.mid.value;
+    	let pwd = myform.pwd.value;
+    	let nickName = myform.nickName.value;
+    	let name = myform.name.value;
+    	let email1 = myform.email1.value;
+    	let email2 = myform.email2.value;
+      let email = email1 + '@' + email2;
+      let homePage = myform.homePage.value;
+      let tel1 = myform.tel1.value;
+      let tel2 = myform.tel2.value;
+      let tel3 = myform.tel3.value;
+    	let tel = tel1 + "-" + tel2 + "-" + tel3;
     	
-	
-    	
-    	let maxSize = 1024 * 1024 * 1;		// 1MByte 까지 허용
+    	// 사진 업로드 체크를 위한 준비
+    	let maxSize = 1024 * 1024 * 1; 	// 업로드할 회원사진의 용량은 1MByte까지로 제한한다.
     	let fName = myform.fName.value;
-    	let ext = fName.substring(fName.lastIndexOf(".")+1);
-    	let uExt = ext.toUpperCase();
+    	let ext = fName.substring(fName.lastIndexOf(".")+1);	// 파일 확장자 발췌
+    	let uExt = ext.toUpperCase();		// 확장자를 대문자로 변환
     	
-    	let submitFlag = 0;
     	
-    	// 파일 전송전에 파일에 관한사항 체크..(파일명이 넘어올경우는 해당 파일을 넘기고, 비었으면 'noimage.jpg'를 넘겨준다.)
-    	if(fName.trim() == "") {
-    		myform.photo.value = "noimage";
+    	// 유효성 검사체크처리한다.(필수 입력필드는 꼭 처리해야 한다.)
+    	if(!regMid.test(mid)) {
+        alert("아이디는 영문 소문자와 숫자, 언더바(_)만 사용가능합니다.(길이는 4~20자리까지 허용)");
+        myform.mid.focus();
+        return false;
+      }
+      else if(!regPwd.test(pwd)) {
+        alert("비밀번호는 1개이상의 문자와 특수문자 조합의 6~24 자리로 작성해주세요.");
+        myform.pwd.focus();
+        return false;
+      }
+      else if(!regNickName.test(nickName)) {
+        alert("닉네임은 한글만 사용가능합니다.");
+        myform.nickName.focus();
+        return false;
+      }
+      else if(!regName.test(name)) {
+        alert("성명은 한글과 영문대소문자만 사용가능합니다.");
+        myform.name.focus();
+        return false;
+      }
+      else if(!regEmail.test(email)) {
+        alert("이메일 형식에 맞지않습니다.");
+        myform.email1.focus();
+        return false;
+      }
+      else if((homePage != "http://" && homePage != "")) {
+        if(!regURL.test(homePage)) {
+	        alert("작성하신 홈페이지 주소가 URL 형식에 맞지않습니다.");
+	        myform.homePage.focus();
+	        return false;
+        }
+        else {
+	    	  submitFlag = 1;
+	      }
+      }
+    	
+    	// 선택사항인 전화번호가 입력되어서 전송되었다면 전화번호형식을 체크해 준다.
+      if(tel2 != "" || tel3 != "") {
+	      if(!regTel.test(tel)) {
+	        alert("전화번호 형식에 맞지않습니다.(000-0000-0000)");
+	        myform.tel2.focus();
+	        return false;
+	      }
+	      else {
+	    	  submitFlag = 1;
+	      }
+      }
+      else {	// 전화번호를 입력하지 않을시 DB에는 '010- - '의 형태로 저장하고자 한다.
+    	  tel2 = " ";
+    	  tel3 = " ";
+    	  tel = tel1 + '-' + tel2 + '-' + tel3;
+    	  submitFlag = 1;
+      }
+    	
+  		// 전송전에 '주소'를 하나로 묶어서 전송처리 준비한다.
+  		let postcode = myform.postcode.value + " ";
+  		let roadAddress = myform.roadAddress.value + " ";
+  		let detailAddress = myform.detailAddress.value + " ";
+  		let extraAddress = myform.extraAddress.value + " ";
+  		myform.address.value = postcode + "/" + roadAddress + "/" + detailAddress + "/" + extraAddress + "/";
+  		
+  		// 전송전에 파일에 관한 사항체크...(회원사진의 내역이 비었으면 noimage를 hidden필드인 photo필드에 담아서 전송한다.)
+  		if(fName.trim() == "") {
+  			myform.photo.value = "noimage"
+				submitFlag = 1;
+  		}
+  		else {
+  			let fileSize = document.getElementById("file").files[0].size;
+  			
+  			if(uExt != "JPG" && uExt != "GIF" && uExt != "PNG") {
+  				alert("업로드 가능한 파일은 'JPG/GIF/PNG'파일 입니다.");
+  				return false;
+  			}
+  			else if(fName.indexOf(" ") != -1) {
+  				alert("업로드 파일명에 공백을 포함할 수 없습니다.");
+  				return false;
+  			}
+  			else if(fileSize > maxSize) {
+  				alert("업로드 파일의 크기는 1MByte를 초과할수 없습니다.");
+  				return false;
+  			}
     		submitFlag = 1;
     	}
-    	else {
-    		let fileSize = document.getElementById("file").files[0].size;
-    		
-    		if(fileSize > maxSize) {
-    			alert("업로드 파일의 크기는 1MByte를 초과할수 없습니다.");
-    			return false;
+    	
+  		// 전송전에 모든 체크가 끝나서 submitFlag가 1이되면 서버로 전송한다.
+    	if(submitFlag == 1) {
+    		if(idCheckSw == 0) {
+    			alert("아이디 중복체크버튼을 눌러주세요!");
+    			document.getElementById("midBtn").focus();
     		}
-    		else if(uExt != "JPG" && uExt != "GIF" && uExt != "PNG") {
-    			alert("업로드 가능한 파일은 'JPG/GIF/PNG'파일 입니다.");
-    			return false;
+    		else if(nickCheckSw == 0) {
+    			alert("닉네임 중복체크버튼을 눌러주세요!");
+    			document.getElementById("nickNameBtn").focus();
     		}
-    		else if(fName.indexOf(" ") != -1) {
-    			alert("업로드 파일에는 공백을 포함할수 없습니다.");
-    			return false;
-    		}
-    		
     		else {
-    			submitFlag = 1;
+	  			// 묶여진 필드(email/tel)를 폼태그안에 hidden태그의 값으로 저장시켜준다.
+	  			myform.email.value = email;
+	  			myform.tel.value = tel;
+	  			
+	  			myform.submit();
     		}
-    	}
-    	
-			let	numcheck1 = myform.numcheck1.value;
-			let	numcheck2 = myform.numcheck2.value;    
-    	
-    	// 전송전에 모든 체크가 끝났다면 submitFlag가 1이 되도록 처리후 서버로 전송한다.
-    	if(numcheck1 == 0 ){
-    		alert("아아디 중복체크를 다시해주세요");
-    	}
-    	else if(numcheck2 == 0 ){
-    		alert("닉네임 중복체크를 다시해주세요");
-    	}
-    	else if(submitFlag == 1) {
-    		// 아이디와 닉네임 중복체크버튼에 대한 체크...
-    		
-    		
-    			myform.tel.value = tel;
-    		
-    		
-    		
-    		
-    		  // 이메일을 하나로 묶어준다.
-    		  myform.email.value = email1 + "@" + email2;
-    			
-    			// 전송전에 '주소'를 하나로 묶어서 전송처리
-    			let postcode = myform.postcode.value + " ";
-    			let roadAddress = myform.roadAddress.value + " ";
-    			let detailAddress = myform.detailAddress.value + " ";
-    			let extraAddress = myform.extraAddress.value + " ";
-    			myform.address.value = postcode + "/" + roadAddress + "/" + detailAddress + "/" + extraAddress;
-    			
-	    		/* alert("회원가입 성공"); */
-    			myform.submit();
     	}
     	else {
     		alert("회원가입 실패~~");
@@ -177,21 +169,22 @@
     		myform.mid.focus();
     	}
     	else {
-    		
+    		idCheckSw = 1;
     		window.open(url,"nWin","width=580px,height=250px");
     	}
     }
     
-    // 닉네임 중복체크
+    // nickName 중복체크
     function nickCheck() {
     	let nickName = myform.nickName.value;
     	let url = "${ctp}/memNickCheck.mem?nickName="+nickName;
     	
-    	if(nickName.trim() == "") {
+    	if(nickName == "") {
     		alert("닉네임을 입력하세요!");
     		myform.nickName.focus();
     	}
     	else {
+    		nickCheckSw = 1;
     		window.open(url,"nWin","width=580px,height=250px");
     	}
     }
@@ -200,12 +193,12 @@
 <body>
 <jsp:include page="/include/header.jsp" />
 <p><br/></p>
-<div class="container">
-  <form name="myform" method="post" action="${ctp}/memJoinOk.mem" class="was-validated">
+<div class="container" style="padding:30px">
+  <form name="myform" method="post" action="${ctp}/memJoinOk.mem" class="was-validated" enctype="multipart/form-data">
     <h2>회 원 가 입</h2>
     <br/>
     <div class="form-group">
-      <label for="mid">아이디 : &nbsp; &nbsp;<input type="button" value="아이디 중복체크" class="btn btn-secondary btn-sm" onclick="idCheck()"/></label>
+      <label for="mid">아이디 : &nbsp; &nbsp;<input type="button" value="아이디 중복체크" id="midBtn" class="btn btn-secondary btn-sm" onclick="idCheck()"/></label>
       <input type="text" class="form-control" name="mid" id="mid" placeholder="아이디를 입력하세요." required autofocus/>
     </div>
     <div class="form-group">
@@ -213,7 +206,7 @@
       <input type="password" class="form-control" id="pwd" placeholder="비밀번호를 입력하세요." name="pwd" required />
     </div>
     <div class="form-group">
-      <label for="nickName">닉네임 : &nbsp; &nbsp;<input type="button" value="닉네임 중복체크" class="btn btn-secondary btn-sm" onclick="nickCheck()"/></label>
+      <label for="nickName">닉네임 : &nbsp; &nbsp;<input type="button" value="닉네임 중복체크" id="nickNameBtn" class="btn btn-secondary btn-sm" onclick="nickCheck()"/></label>
       <input type="text" class="form-control" id="nickName" placeholder="별명을 입력하세요." name="nickName" required />
     </div>
     <div class="form-group">
@@ -275,6 +268,7 @@
 	      <input type="text" name="tel3" size=4 maxlength=4 class="form-control"/>
 	    </div> 
     </div>
+    
     <div class="form-group">
       <label for="address">주소</label>
 			<input type="hidden" name="address" id="address">
@@ -292,6 +286,7 @@
 				</div>
 			</div>
     </div>
+    
     <div class="form-group">
 	    <label for="homepage">Homepage address:</label>
 	    <input type="text" class="form-control" name="homePage" value="http://" placeholder="홈페이지를 입력하세요." id="homePage"/>
@@ -381,8 +376,6 @@
     <input type="hidden" name="photo"/>
     <input type="hidden" name="tel"/>
     <input type="hidden" name="email"/>
-    <input type="hidden" name="numcheck1"/>
-    <input type="hidden" name="numcheck2"/>
   </form>
 </div>
 <p><br/></p>

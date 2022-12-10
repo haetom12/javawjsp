@@ -100,6 +100,53 @@ select *,datediff(now() , wDate) as day_diff, timestampdiff(hour, wDate, now()) 
 /* 이전글 다음글 체크 */
 select * from board where idx < 6 order by idx desc limit 1;
 select * from board where idx > 6 limit 1;
-
 select * from board where idx < 6 order by idx desc limit 1;
+
+
+/* 댓글의 수를 전체 List에 출력하기 연습 */
+select * from boardReply order by idx desc;
+-- 댓글테이블(boardReply)에서 board 테이블의 고유번호 19번글에 딸려있는 댓글의 개수는?
+select count(*) from boardReply where boardIdx = 20;
+-- 원본글의 고유번호와 함께 출력, 갯수의 별명은 replyCnt
+select boardIdx, count(*) as replyCnt from boardReply where boardIdx = 19;
+
+SELECT count(*) FROM boardReply WHERE boardIdx = 19 as replyCnt;
+
+-- 댓글테이블(boardReply)에서 board 테이블의 고유번호 19번글에 딸려있는 댓글의 개수는?
+-- 원본글의 고유번호와 함께 출력, 갯수의 별명은 replyCnt
+-- 이때 원본글을 쓴 닉네임을 함께 출력하시오. 단, 닉네임은 board(원본글)테이블에서 가져와서 출력하시오.
+select boardIdx, nickName ,count(*) as replyCnt from boardReply where boardIdx = 19;
+SELECT boardIdx,
+		(SELECT nickName from board where idx = 19) AS nickName ,
+		count(*) AS replyCnt 
+		FROM boardReply WHERE boardIdx = 19;
+		
+-- 앞의 문장을 부모테이블(board) 의 관점에서 보자...
+SELECT mid, nickName FROM board where idx = 19;
+-- 앞의 닉네임을 자식(댓글)테이블(boardReply)에서 가져와서 보여준다면??
+SELECT mid, 
+	(select nickName from boardReply where boardIdx = 19)	as nickName 
+	FROM board where idx = 19;
+
+-- 부모관점(board)에서 고유번호 35번의 아이디와, 현재글에 달려있는 댓글의 개수???
+SELECT mid,
+	(SELECT count(*) FROM boardReply WHERE boardIdx = 19) 
+	FROM board WHERE idx =19;
+
+-- 부모관점(board)에서 board테이블의 모든 내용와, 현재글에 달려있는 댓글의 개수를 가져오되, 최근글 5개만 출력?
+SELECT *,
+	(SELECT count(*) FROM boardReply WHERE boardIdx = board.idx) as replyCnt
+	FROM board
+	order by idx desc
+	limit 5;
+	
+-- 부모관점(board)에서 board테이블의 모든 내용와, 현재글에 달려있는 댓글의 개수를 가져오되, 최근글 5개만 출력?
+-- 각각의 테이블에 별명을 붙여서 앞의 내용을 변경시켜보자
+SELECT *,
+	(SELECT count(*) FROM boardReply WHERE boardIdx = b.idx) as replyCnt
+	FROM board b
+	order by idx desc
+	limit 5;
+
+
 

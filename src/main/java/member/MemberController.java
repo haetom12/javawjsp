@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import guest.GuListCommand;
-
 @SuppressWarnings("serial")
 @WebServlet("*.mem")
 public class MemberController extends HttpServlet {
@@ -23,15 +21,12 @@ public class MemberController extends HttpServlet {
 		String uri = request.getRequestURI();
 		String com = uri.substring(uri.lastIndexOf("/"), uri.lastIndexOf("."));
 		
-	// 세션이 끊겼으면 작업의 진행을 중지시키고 홈으로 전송시켜준다.
-//		HttpSession session = request.getSession();
-//		int level = session.getAttribute("sLevel")==null ? 99 : (int) session.getAttribute("sLevel");	
-//		if(level >= 4) {
-//			RequestDispatcher dispatcher = request.getRequestDispatcher("/"); //우리사이트의 루트로 보냄
-//			dispatcher.forward(request, response);
-//		}
-		
+		HttpSession session = request.getSession();
+		int level = session.getAttribute("sLevel")==null ? 99 : (int) session.getAttribute("sLevel");
+
 		if(com.equals("/memLogin")) {
+			command = new MemLoginCommand();
+			command.execute(request, response);
 			viewPage += "/memLogin.jsp";
 		}
 		else if(com.equals("/memLoginOk")) {
@@ -39,15 +34,13 @@ public class MemberController extends HttpServlet {
 			command.execute(request, response);
 			viewPage = "/include/message.jsp";
 		}
-		else if(com.equals("/memLogout")) {
-			command = new MemLogoutCommand();
+		else if(com.equals("/memJoin")) {
+			viewPage += "/memJoin.jsp";
+		}
+		else if(com.equals("/memJoinOk")) {
+			command = new MemJoinOkCommand();
 			command.execute(request, response);
 			viewPage = "/include/message.jsp";
-		}
-		else if(com.equals("/memMain")) {
-			command = new MemMainCommand();
-			command.execute(request, response);
-			viewPage += "/memMain.jsp";
 		}
 		else if(com.equals("/memIdCheck")) {
 			command = new MemIdCheckCommand();
@@ -59,13 +52,19 @@ public class MemberController extends HttpServlet {
 			command.execute(request, response);
 			viewPage += "/memNickCheck.jsp";
 		}
-		else if(com.equals("/memJoin")) {
-			viewPage += "/memJoin.jsp";
+		else if(level >= 4) {	// 세션이 끈겼다면 작업의 진행을 중시시키고 홈으로 전송시켜준다.
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/");
+			dispatcher.forward(request, response);
 		}
-		else if(com.equals("/memJoinOk")) {
-			command = new MemJoinOkCommand();
+		else if(com.equals("/memLogout")) {
+			command = new MemLogoutCommand();
 			command.execute(request, response);
 			viewPage = "/include/message.jsp";
+		}
+		else if(com.equals("/memMain")) {
+			command = new MemMainCommand();
+			command.execute(request, response);
+			viewPage += "/memMain.jsp";
 		}
 		else if(com.equals("/memList")) {
 			command = new MemListCommand();
@@ -104,7 +103,7 @@ public class MemberController extends HttpServlet {
 			viewPage = "/include/message.jsp";
 		}
 		else if(com.equals("/memMemberSearch")) {
-			command = new MemMemberSearchCommand();
+			command = new MemberSearchCommand_bak();
 			command.execute(request, response);
 			viewPage += "/memList.jsp";
 		}
@@ -112,9 +111,6 @@ public class MemberController extends HttpServlet {
 			command = new MemDeleteCommand();
 			command.execute(request, response);
 			viewPage = "/include/message.jsp";
-		}
-		else if(com.equals("/memDeletePwd")) {
-			viewPage += "/memDelPwdCheck.jsp";
 		}
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher(viewPage);

@@ -15,9 +15,9 @@ public class MemMainCommand implements MemberInterface {
 		
 		String mid = (String) session.getAttribute("sMid");
 		
-		MemberDAO memDao = new MemberDAO();
+		MemberDAO dao = new MemberDAO();
 		
-		MemberVO vo = memDao.getLoginCheck(mid);
+		MemberVO vo = dao.getLoginCheck(mid);
 		
 		// 레벨을 문자로 처리해서 넘겨준다.
 		String strLevel = "";
@@ -33,8 +33,13 @@ public class MemMainCommand implements MemberInterface {
 		request.setAttribute("visitCnt", vo.getVisitCnt());
 		request.setAttribute("strLevel", strLevel);
 		
-		// 사용자가 방명록에서 글쓴 회수 가져오기.....
+		request.setAttribute("photo", vo.getPhoto());
 		
+		// 사용자가 방명록에서 글쓴 회수 가져오기.....
+		int guestCnt = dao.getGuestWrite(mid, vo.getName(), vo.getNickName());
+		request.setAttribute("guestCnt", guestCnt);
+		
+
 	}
 
 }

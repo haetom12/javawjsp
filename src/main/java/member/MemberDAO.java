@@ -11,7 +11,7 @@ import conn.GetConn;
 public class MemberDAO {
 	// 싱글톤을 이용한 DB연결 객체 연결하기...
 	GetConn getConn = GetConn.getInstance();
-			
+	
 	private Connection conn = getConn.getConn();
 	private PreparedStatement pstmt = null;
 	private ResultSet rs = null;
@@ -24,8 +24,8 @@ public class MemberDAO {
 	public MemberVO getLoginCheck(String mid) {
 		vo = new MemberVO();
 		try {
-			sql = "select * from member where mid= ?";
-			pstmt = conn.prepareCall(sql);
+			sql = "select * from member where mid = ?";
+			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, mid);
 			rs = pstmt.executeQuery();
 			
@@ -58,67 +58,60 @@ public class MemberDAO {
 				vo = null;
 			}
 		} catch (SQLException e) {
-				System.out.println("sql 오류 : "+e.getMessage());
+			System.out.println("SQL 오류 : " + e.getMessage());
 		} finally {
 			getConn.rsClose();
 		}
-		
 		return vo;
 	}
 
 	// 오늘 처음 방문시 방문카운트 0으로 초기화
 	public void setTodayCntUpdate(String mid) {
 		try {
-			sql = "update member set todayCnt = 1 where mid = ?";
+			sql = "update member set todayCnt = 0 where mid = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, mid);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
-			System.out.println("SQL 오류 : "+e.getMessage());
-			} finally {
-				getConn.pstmtClose();
-				}
+			System.out.println("SQL 오류 : " + e.getMessage());
+		} finally {
+			getConn.pstmtClose();
+		}
 	}
 
-	//오늘 재방문이라면 '방문수', '오늘방문수', '포인트' 누적처리
+  // 오늘 재방문이라면 '총방문수','오늘방문수','포인트' 누적처리
 	public void setMemTotalUpdate(String mid, int nowTodayPoint) {
 		try {
-			sql = "update member set visitCnt=visitCnt+1, todayCnt = todayCnt+1, point=?, lastDate=now() where mid = ?";
+			sql = "update member set visitCnt=visitCnt+1, todayCnt=todayCnt+1, point=?, lastDate=now() where mid = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, nowTodayPoint);
 			pstmt.setString(2, mid);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
-			System.out.println("SQL 오류 : "+e.getMessage());
-			} finally {
-				getConn.pstmtClose();
-				}
+			System.out.println("SQL 오류 : " + e.getMessage());
+		} finally {
+			getConn.pstmtClose();
+		}
 	}
 
-	// 닉네임 체크
-	public MemberVO getNickNameCheck(String nickName) {
-		vo = new MemberVO();
+	// 닉네임 중복체크
+	public String memNickCheck(String nickName) {
+		String name = "";
 		try {
-			sql = "select * from member where nickName= ?";
-			pstmt = conn.prepareCall(sql);
+			sql = "select name from member where nickName = ?";
+			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, nickName);
 			rs = pstmt.executeQuery();
-			
-			if(rs.next()) {
-				vo.setIdx(rs.getInt("idx"));
-			}
-			else {
-				vo = null;
-			}
+			if(rs.next()) name = rs.getString("name");
 		} catch (SQLException e) {
-				System.out.println("sql 오류 : "+e.getMessage());
+			System.out.println("SQL 에러 : " + e.getMessage());
 		} finally {
 			getConn.rsClose();
 		}
-		
-		return vo;
+		return name;
 	}
 
+	// 신규회원 가입처리
 	public int setMemberJoinOk(MemberVO vo) {
 		int res = 0;
 		try {
@@ -142,24 +135,41 @@ public class MemberDAO {
 			pstmt.executeUpdate();
 			res = 1;
 		} catch (SQLException e) {
-			System.out.println("SQL 오류 : "+e.getMessage());
-			} finally {
-				getConn.pstmtClose();
-				}
+			System.out.println("SQL 에러 : " + e.getMessage());
+		} finally {
+			getConn.pstmtClose();
+		}
+		
 		return res;
 	}
 
-	/*
-	public ArrayList<MemberVO> getMemList(int level) {
+	// 회원자료 전체 검색
+	public ArrayList<MemberVO> getMemList(int startIndexNo, int pageSize, String mid, int level) {
 		ArrayList<MemberVO> vos = new ArrayList<>();
 		try {
-			if(level != 0) {
-				sql = "select * from member where userInfor = '공개' order by idx desc";				
+			if(!mid.equals("")) {
+				if(level != 0) {
+					sql = "select * from member where userInfor = '공개' and mid like ? order by idx desc limit ?,?";
+				}
+				else {
+					sql = "select * from member where mid like ? order by idx desc limit ?,?";
+				}
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, "%"+mid+"%");
+				pstmt.setInt(2, startIndexNo);
+				pstmt.setInt(3, pageSize);
 			}
 			else {
-				sql = "select * from member order by idx desc";								
+				if(level != 0) {
+					sql = "select * from member where userInfor = '공개' order by idx desc limit ?,?";
+				}
+				else {
+					sql = "select * from member order by idx desc limit ?,?";
+				}
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, startIndexNo);
+				pstmt.setInt(2, pageSize);
 			}
-			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			
 			while(rs.next()) {
@@ -190,48 +200,15 @@ public class MemberDAO {
 				
 				vos.add(vo);
 			}
-			
-			while(rs.next()) {
-				vo = new MemberVO();
-				vo.setIdx(rs.getInt("idx"));
-				vo.setMid(rs.getString("mid"));
-				vo.setPwd(rs.getString("pwd"));
-				vo.setNickName(rs.getString("nickName"));
-				vo.setName(rs.getString("name"));
-				vo.setGender(rs.getString("gender"));
-				vo.setBirthday(rs.getString("birthday"));
-				vo.setTel(rs.getString("tel"));
-				vo.setAddress(rs.getString("address"));
-				vo.setEmail(rs.getString("email"));
-				vo.setHomePage(rs.getString("homePage"));
-				vo.setJob(rs.getString("job"));
-				vo.setHobby(rs.getString("hobby"));
-				vo.setPhoto(rs.getString("photo"));
-				vo.setContent(rs.getString("content"));
-				vo.setUserInfor(rs.getString("userInfor"));
-				vo.setUserDel(rs.getString("userDel"));
-				vo.setPoint(rs.getInt("point"));
-				vo.setLevel(rs.getInt("level"));
-				vo.setVisitCnt(rs.getInt("visitCnt"));
-				vo.setStartDate(rs.getString("startDate"));
-				vo.setLastDate(rs.getString("lastDate"));
-				vo.setTodayCnt(rs.getInt("todayCnt"));
-				
-				vos.add(vo);
-			}
-			
-			
 		} catch (SQLException e) {
-			System.out.println("sql 오류 : "+e.getMessage());
-			} finally {
-				getConn.rsClose();
-				}
-		
+			System.out.println("SQL 에러 : " + e.getMessage());
+		} finally {
+			getConn.rsClose();
+		}
 		return vos;
 	}
-	*/
 
-	//비밀번호 변경처리
+	// 비밀번호 변경처리
 	public int setMemUpdatePwdOk(String mid, String newPwd) {
 		int res = 0;
 		try {
@@ -242,36 +219,18 @@ public class MemberDAO {
 			pstmt.executeUpdate();
 			res = 1;
 		} catch (SQLException e) {
-			System.out.println("SQL 오류 : "+e.getMessage());
-			} finally {
-				getConn.pstmtClose();
-				}
-		
-		
+			System.out.println("SQL 에러 : " + e.getMessage());
+		} finally {
+			getConn.pstmtClose();
+		}
 		return res;
 	}
 
-	public String memNickCheck(String nickName) {
-		String name = "";
-		try {
-			sql = "select name from member where nickName = ?";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, nickName);
-			rs = pstmt.executeQuery();
-			if(rs.next()) name = rs.getString("name");
-		} catch (SQLException e) {
-			System.out.println("SQL 에러 : " + e.getMessage());
-		} finally {
-			getConn.rsClose();
-		}
-		return name;
-	}
-
-	//회원정보 수정하기
+	// 회원 정보수정하기
 	public int setMemberUpdateOk(MemberVO vo) {
 		int res = 0;
 		try {
-			sql = "update member set nickName=?, name=?, gender=?, birthday=?, "
+			sql = "update member set nickName=?, name=?, gender=?, birthday=?,"
 					+ "tel=?, address=?, email=?, homePage=?, job=?, hobby=?,"
 					+ "photo=?, content=?, userInfor=? where mid=?";
 			pstmt = conn.prepareStatement(sql);
@@ -292,31 +251,60 @@ public class MemberDAO {
 			pstmt.executeUpdate();
 			res = 1;
 		} catch (SQLException e) {
-			System.out.println("SQL 오류 : "+e.getMessage());
-			} finally {
-				getConn.pstmtClose();
-				}
+			System.out.println("SQL 에러 : " + e.getMessage());
+		} finally {
+			getConn.pstmtClose();
+		}
+		
 		return res;
 	}
-	
-		// 방명록의 총 레코드 건수 구하기
-	public int totRecCnt(int level) {
+
+  // 현재 로그인한 회원이 방명록에 올린 글의 개수 가져오기
+	public int getGuestWrite(String mid, String name, String nickName) {
+		int guestCnt = 0;
+		try {
+			sql = "select count(*) as cnt from guest where name = ? or name = ? or name = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, mid);
+			pstmt.setString(2, name);
+			pstmt.setString(3, nickName);
+			rs = pstmt.executeQuery();
+			rs.next();
+			guestCnt = rs.getInt("cnt");
+		} catch (SQLException e) {
+			System.out.println("SQL 에러 : " + e.getMessage());
+		} finally {
+			getConn.rsClose();
+		}
+		return guestCnt;
+	}
+
+	// 총 레코드 건수 구하기
+	public int totRecCnt(String mid, int level) {
 		int totRecCnt = 0;
 		try {
-			
-			if(level != 0) {
-				sql = "select count(*) as cnt from member where userInfor = '공개'";
+			if(mid.equals("")) {	// 전체리스트
+				if(level != 0) {		// 일반사용자
+					sql = "select count(*) as cnt from member where userInfor = '공개'";
+				}
+				else {		// 관리자
+					sql = "select count(*) as cnt from member";
+				}
+				pstmt = conn.prepareStatement(sql);
 			}
-			else {
-				sql = "select count(*) as cnt from member";							
+			else {		// 조건 리스트
+				if(level != 0) {
+					sql = "select count(*) as cnt from member where userInfor = '공개' and mid like ?";
+				}
+				else {
+					sql = "select count(*) as cnt from member where mid like ?";
+				}
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, "%"+mid+"%");
 			}
-		
-			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
-			
 			rs.next();
-	//		totRecCnt = rs.getInt(1); //필드 순번(count가 가장먼저있음)
-			totRecCnt = rs.getInt("cnt"); // as로 별명 부여
+			totRecCnt = rs.getInt("cnt");
 		} catch (SQLException e) {
 			System.out.println("SQL 에러 : " + e.getMessage());
 		} finally {
@@ -325,65 +313,11 @@ public class MemberDAO {
 		return totRecCnt;
 	}
 
-	public ArrayList<MemberVO> getMemList2(int startIndexNo, int pageSize, int level) {
+	// 회원 자료 검색..
+	public ArrayList<MemberVO> getMemberSearch(String mid) {
 		ArrayList<MemberVO> vos = new ArrayList<>();
 		try {
-			if(level != 0) {
-				sql = "select * from member where userInfor = '공개' order by idx desc limit ?,?";		
-			}
-			else {
-				sql = "select * from member order by idx desc limit ?,?";							
-			}
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, startIndexNo);
-			pstmt.setInt(2, pageSize);
-			rs = pstmt.executeQuery();
-			
-			while(rs.next()) {
-				vo = new MemberVO();
-				vo.setIdx(rs.getInt("idx"));
-				vo.setMid(rs.getString("mid"));
-				vo.setPwd(rs.getString("pwd"));
-				vo.setNickName(rs.getString("nickName"));
-				vo.setName(rs.getString("name"));
-				vo.setGender(rs.getString("gender"));
-				vo.setBirthday(rs.getString("birthday"));
-				vo.setTel(rs.getString("tel"));
-				vo.setAddress(rs.getString("address"));
-				vo.setEmail(rs.getString("email"));
-				vo.setHomePage(rs.getString("homePage"));
-				vo.setJob(rs.getString("job"));
-				vo.setHobby(rs.getString("hobby"));
-				vo.setPhoto(rs.getString("photo"));
-				vo.setContent(rs.getString("content"));
-				vo.setUserInfor(rs.getString("userInfor"));
-				vo.setUserDel(rs.getString("userDel"));
-				vo.setPoint(rs.getInt("point"));
-				vo.setLevel(rs.getInt("level"));
-				vo.setVisitCnt(rs.getInt("visitCnt"));
-				vo.setStartDate(rs.getString("startDate"));
-				vo.setLastDate(rs.getString("lastDate"));
-				vo.setTodayCnt(rs.getInt("todayCnt"));
-				
-				vos.add(vo);
-			}
-		} catch (SQLException e) {
-			System.out.println("sql 오류 : "+e.getMessage());
-			} finally {
-				getConn.rsClose();
-				}
-		return vos;
-	}
-
-	public ArrayList<MemberVO> getMemberSearch(String mid, int level) {
-		ArrayList<MemberVO> vos = new ArrayList<>();
-		try {
-				if(level != 0) {
-					sql = "select * from member where mid like ? and userInfor = '공개'";	
-				}
-				else {
-					sql = "select * from member where mid like ?";				
-				}
+			sql = "select * from member where mid like ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, "%"+mid+"%");
 			rs = pstmt.executeQuery();
@@ -417,16 +351,14 @@ public class MemberDAO {
 				vos.add(vo);
 			}
 		} catch (SQLException e) {
-			System.out.println("sql 오류 : "+e.getMessage());
-			} finally {
-				getConn.rsClose();
-				}
-		
-		
+			System.out.println("SQL 에러 : " + e.getMessage());
+		} finally {
+			getConn.rsClose();
+		}
 		return vos;
 	}
 
-	//회원 탈퇴처리(userDel필드의 값을 'Ok'로 변경처리한다.)
+	// 회원 탈퇴처리(userDel필드의 값을 'OK'로 변경처리한다.
 	public void setMemberDel(String mid) {
 		try {
 			sql = "update member set userDel = 'OK' where mid = ?";
@@ -434,9 +366,11 @@ public class MemberDAO {
 			pstmt.setString(1, mid);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
-			System.out.println("sql 오류 : "+e.getMessage());
+			System.out.println("SQL 에러 : " + e.getMessage());
 		} finally {
 			getConn.pstmtClose();
 		}
 	}
+	
+	
 }

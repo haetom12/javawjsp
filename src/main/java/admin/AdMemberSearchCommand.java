@@ -16,9 +16,9 @@ public class AdMemberSearchCommand implements AdminInterface {
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String mid = request.getParameter("mid")==null ? "" : request.getParameter("mid");
 		
-		AdminDAO dao = new AdminDAO();
+		MemberDAO dao = new MemberDAO();
 		
-		ArrayList<AdminVO> vos = dao.getMemberSearch(mid);
+		ArrayList<MemberVO> vos = dao.getMemberSearch(mid);
 		
 		request.setAttribute("vos", vos);
 	}
