@@ -15,7 +15,7 @@ public class BoReplyDeleteOkCommand implements BoardInterface {
 		BoardDAO dao = new BoardDAO();
 		
 		String res = dao.setBoReplyDeleteOk(idx);
-
+		
 		response.getWriter().write(res);
 	}
 

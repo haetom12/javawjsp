@@ -33,7 +33,10 @@ public class BoSearchCommand implements BoardInterface {
 		request.setAttribute("searchTitle", searchTitle);
 		request.setAttribute("pag", pag);
 		request.setAttribute("pageSize", pageSize);
-
+		
+		
+		
+		
 		
 		/*
 		// 페이징처리 준비 시작

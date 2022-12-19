@@ -23,9 +23,9 @@ public class BoardVO {
 	private String nextTitle;
 	
 	// 댓글의 갯수를 저장하기위한 변수
-	private int replyCnt;
-	
+	private int replyCount;
 
+	
 	public int getIdx() {
 		return idx;
 	}
@@ -162,12 +162,12 @@ public class BoardVO {
 		this.nextTitle = nextTitle;
 	}
 
-	public int getReplyCnt() {
-		return replyCnt;
+	public int getReplyCount() {
+		return replyCount;
 	}
 
-	public void setReplyCnt(int replyCnt) {
-		this.replyCnt = replyCnt;
+	public void setReplyCount(int replyCount) {
+		this.replyCount = replyCount;
 	}
 
 	@Override
@@ -175,8 +175,8 @@ public class BoardVO {
 		return "BoardVO [idx=" + idx + ", nickName=" + nickName + ", title=" + title + ", email=" + email + ", homePage="
 				+ homePage + ", content=" + content + ", wDate=" + wDate + ", hostIp=" + hostIp + ", readNum=" + readNum
 				+ ", good=" + good + ", mid=" + mid + ", day_diff=" + day_diff + ", hour_diff=" + hour_diff + ", preIdx="
-				+ preIdx + ", nextIdx=" + nextIdx + ", preTitle=" + preTitle + ", nextTitle=" + nextTitle + ", replyCnt="
-				+ replyCnt + "]";
+				+ preIdx + ", nextIdx=" + nextIdx + ", preTitle=" + preTitle + ", nextTitle=" + nextTitle + ", replyCount="
+				+ replyCount + "]";
 	}
 	
 }

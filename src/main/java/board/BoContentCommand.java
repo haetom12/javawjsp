@@ -54,27 +54,21 @@ public class BoContentCommand implements BoardInterface {
 		}
 		String imsiGoodIdx = "boardGood" + idx;
 		if(goodIdx.contains(imsiGoodIdx)) {
-			session.setAttribute("sSw", "1");
+			session.setAttribute("sSw", "1");		// 로그인 사용자가 이미 좋아요를 클릭한 게시글이라면 빨강색으로 표시가히위해 sSW에 1을 전송하고 있다.
 		}
 		else {
 			session.setAttribute("sSw", "0");
 		}
 		
 		// 이전글과 다음글 처리
-		BoardVO preVo = dao.getPreNextSearch("pre", idx);
+		BoardVO preVo  = dao.getPreNextSearch("pre", idx);
 		BoardVO nextVo = dao.getPreNextSearch("next", idx);
 		request.setAttribute("preVo", preVo);
 		request.setAttribute("nextVo", nextVo);
 		
-		// 입력 된 댓글 가져오기
+		// 입력된 댓글 가져오기
 		ArrayList<BoardReplyVO> replyVos = dao.getBoReply(idx);
-		
 		request.setAttribute("replyVos", replyVos);
-		//d5fa6e6aaabeb6fd62fb97fd757cb29b688d77ff4b4a2b1a47c9adcc0f249898
-		//d5fa6e6aaabeb6fd62fb97fd757cb29b688d77ff4b4a2b1a47c9adcc0f249898
-		
-//		System.out.println("preVo : " + preVo);
-//		System.out.println("nextVo : " + nextVo);
 	}
 
 }

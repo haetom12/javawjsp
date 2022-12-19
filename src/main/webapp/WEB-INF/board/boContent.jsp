@@ -64,65 +64,62 @@
     
     // 댓글 달기
     function replyCheck() {
-			let content = $("#content").val();
-			if(content.trim() == "") {
-				alert("댓글을 입력하세요");
-				$("#content").focus();
-				return false;
-			}
-			let query = {
-					boardIdx : ${vo.idx},
-					mid 		 : '${sMid}',
-					nickName : '${sNickName}',
-					content  : content,
-					hostIp 	 : '${pageContext.request.remoteAddr}'
-			}
-			
-			$.ajax({
-				type : "post",
-				url : "${ctp}/boReplyInput.bo",
-				data : query,
-				success : function(res) {
-					if(res=="1"){
-						alert("댓글이 입력되었습니다.");
-						location.reload();
-					}
-					else{
-						alert("댓글 입력 실패~~");
-					}
-				},
-				error : function(){
-					alert("전송 오류!!");
-				}
-			});
-		}
+    	let content = $("#content").val();
+    	if(content.trim() == "") {
+    		alert("댓글을 입력하세요");
+    		$("#content").focus();
+    		return false;
+    	}
+    	let query = {
+    			boardIdx  : ${vo.idx},
+    			mid				: '${sMid}',
+    			nickName  : '${sNickName}',
+    			content   : content,
+    			hostIp    : '${pageContext.request.remoteAddr}'
+    	}
+    	
+    	$.ajax({
+    		type : "post",
+    		url  : "${ctp}/boReplyInput.bo",
+    		data : query,
+    		success:function(res) {
+    			if(res == "1") {
+    				alert("댓글이 입력되었습니다.");
+    				location.reload();
+    			}
+    			else {
+    				alert("댓글 입력 실패~~~");
+    			}
+    		},
+  			error  : function() {
+  				alert("전송 오류!!");
+  			}
+    	});
+    }
     
-    // 댓글삭제하기
+    // 댓글 삭제하기
     function replyDelCheck(idx) {
-			let ans = confirm("댓글을 삭제하시겠습니까?");
-			if(!ans) return false;
-			
-			$.ajax({
-				type : "post",
-				url : "${ctp}/boReplyDeleteOk.bo",
-				data : {idx : idx},
-				success : function(res) {
-					if(res == '1') {
-						alert("댓글이 삭제되었습니다.");
-						location.reload();
-					}
-					else{
-						alert("댓글 삭제 실패~~");
-					}
-				},
-				error : function(){
-					alert("전송 오류!!");
-				}
-			});
-	}
-    
-    
-    
+    	let ans = confirm("현재 댓글을 삭제하시겠습니까?");
+    	if(!ans) return false;
+    	
+    	$.ajax({
+    		type  : "post",
+    		url   : "${ctp}/boReplyDeleteOk.bo",
+    		data  : {idx : idx},
+    		success:function(res) {
+    			if(res == "1") {
+    				alert("댓글이 삭제되었습니다.");
+    				location.reload();
+    			}
+    			else {
+    				alert("댓글이 삭제 실패~~");
+    			}
+    		},
+    		error  : function() {
+    			alert("전송 오류~~");
+    		}
+    	});
+    }
   </script>
 </head>
 <body>
@@ -206,28 +203,29 @@
 <div class="container">
 	<table class="table table-hover text-left">
 	  <tr style="background-color:#eee">
-	    <th>작성자</th>
+	    <th> &nbsp;작성자</th>
 	    <th>댓글내용</th>
-	    <th class= "text-center">작성일자</th>
-	    <th class= "text-center">접속IP</th>
+	    <th class="text-center">작성일자</th>
+	    <th class="text-center">접속IP</th>
 	  </tr>
 	  <c:forEach var="replyVo" items="${replyVos}">
 	    <tr>
 	      <td>${replyVo.nickName}
-		      <c:if test="${sMid == replyVo.mid || sLevel == 0}">
-		      	(<font color="red"><a href="javascript:replyDelCheck(${replyVo.idx})" title="삭제하기">x</a></font>)
-		      </c:if>
+	        <c:if test="${sMid == replyVo.mid || sLevel == 0}">
+	          (<a href="javascript:replyDelCheck(${replyVo.idx})" title="삭제하기">x</a>)
+	        </c:if>
 	      </td>
 	      <td>
-	      	${fn:replace(replyVo.content,newLine,"<br/>")}
+	        ${fn:replace(replyVo.content, newLine, "<br/>")}
 	      </td>
-	      <td class= "text-center">${replyVo.wDate}</td>
-	      <td class= "text-center">${replyVo.hostIp}</td>
+	      <td class="text-center">${replyVo.wDate}</td>
+	      <td class="text-center">${replyVo.hostIp}</td>
 	    </tr>
 	  </c:forEach>
 	</table>
 	<!-- 댓글 입력창 -->
-<%-- 	<form name="replyForm" method="post" action="${ctp}/boReplyInput.bo"> --%>
+	<%-- <form name="replyForm" method="post" action="${ctp}/boReplyInput.bo"> --%>
+	<form name="replyForm">
 	  <table class="table text-center">
 	    <tr>
 	      <td style="width:85%" class="text-left">
@@ -243,11 +241,13 @@
 	      </td>
 	    </tr>
 	  </table>
-<%-- 	  <input type="hidden" name="boardIdx" value="${vo.idx}"/>
+	  <%-- 
+	  <input type="hidden" name="boardIdx" value="${vo.idx}"/>
 	  <input type="hidden" name="hostIp" value="${pageContext.request.remoteAddr}"/>
 	  <input type="hidden" name="mid" value="${sMid}"/>
 	  <input type="hidden" name="nickName" value="${sNickName}"/>
-	</form> --%>
+	   --%>
+	</form>
 </div>
 <p><br/></p>
 <jsp:include page="/include/footer.jsp" />

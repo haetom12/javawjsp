@@ -15,7 +15,6 @@ public class BoInputOkCommand implements BoardInterface {
 		String mid = (String) session.getAttribute("sMid");
 		String nickName = (String) session.getAttribute("sNickName");
 		
-		
 		String title = request.getParameter("title")==null ? "" : request.getParameter("title");
 		String email = request.getParameter("email")==null ? "" : request.getParameter("email");
 		String homePage = request.getParameter("homePage")==null ? "" : request.getParameter("homePage");
@@ -35,13 +34,13 @@ public class BoInputOkCommand implements BoardInterface {
 		
 		int res = dao.setBoinputOk(vo);
 		
-		if(res==1) {
+		if(res == 1) {
 			request.setAttribute("msg", "boInputOk");
 			request.setAttribute("url", request.getContextPath()+"/boList.bo");
 		}
 		else {
 			request.setAttribute("msg", "boInputNo");
-			request.setAttribute("url", request.getContextPath()+"/boInput.bo");			
+			request.setAttribute("url", request.getContextPath()+"/boInput.bo");
 		}
 	}
 

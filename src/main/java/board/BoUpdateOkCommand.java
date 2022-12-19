@@ -28,7 +28,6 @@ public class BoUpdateOkCommand implements BoardInterface {
 		vo.setContent(content);
 		vo.setHostIp(hostIp);
 		
-		
 		BoardDAO dao = new BoardDAO();
 		
 		int res = dao.setBoUpdateOk(vo);
@@ -40,7 +39,6 @@ public class BoUpdateOkCommand implements BoardInterface {
 			request.setAttribute("msg", "boUpdateNo");
 		}
 		request.setAttribute("url", request.getContextPath()+"/boContent.bo?idx="+idx+"&pag="+pag+"&pageSize="+pageSize);
-
 	}
 
 }

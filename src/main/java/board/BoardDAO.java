@@ -48,9 +48,9 @@ public class BoardDAO {
 					+ " timestampdiff(hour, wDate, now()) as hour_diff"
 					+ " from board order by idx desc limit ?,?";
 			*/
-			sql = "SELECT *, datediff(now(), wDate) as day_diff, "
-					+ " timestampdiff(hour, wDate, now()) as hour_diff, "
-					+ "(SELECT count(*) FROM boardReply WHERE boardIdx = b.idx) as replyCnt "
+			sql = "SELECT 	*,datediff(now(), wDate) as day_diff, "
+					+ "timestampdiff(hour, wDate, now()) as hour_diff, "
+					+ "(SELECT count(*)	FROM boardReply WHERE boardIdx=b.idx) as replyCount "
 					+ "FROM board b order by idx desc "
 					+ "limit ?,?";
 			pstmt = conn.prepareStatement(sql);
@@ -74,7 +74,7 @@ public class BoardDAO {
 				
 				vo.setDay_diff(rs.getInt("day_diff"));
 				vo.setHour_diff(rs.getInt("hour_diff"));
-				vo.setReplyCnt(rs.getInt("replyCnt"));
+				vo.setReplyCount(rs.getInt("replyCount"));
 				
 				vos.add(vo);
 			}
@@ -253,15 +253,7 @@ public class BoardDAO {
 	public ArrayList<BoardVO> getBoContentSearch(String search, String searchString) {
 		ArrayList<BoardVO> vos = new ArrayList<>();
 		try {
-//			sql = "select * from board where "+search+" like ? order by idx desc";
-			
-			sql = "SELECT *, datediff(now(), wDate) as day_diff, "
-					+ " timestampdiff(hour, wDate, now()) as hour_diff, "
-					+ "(SELECT count(*) FROM boardReply WHERE boardIdx = b.idx) as replyCnt "
-					+ "FROM board b where "+search+" like ? order by idx desc";
-//					+ "limit ?,?";
-			
-			
+			sql = "select * from board where "+search+" like ? order by idx desc";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, "%"+searchString+"%");
 			rs = pstmt.executeQuery();
@@ -280,9 +272,8 @@ public class BoardDAO {
 				vo.setGood(rs.getInt("good"));
 				vo.setMid(rs.getString("mid"));
 				
-				vo.setDay_diff(rs.getInt("day_diff"));
-				vo.setHour_diff(rs.getInt("hour_diff"));
-				vo.setReplyCnt(rs.getInt("replyCnt"));
+//				vo.setDay_diff(rs.getInt("day_diff"));
+//				vo.setHour_diff(rs.getInt("hour_diff"));
 				
 				vos.add(vo);
 			}
@@ -294,10 +285,11 @@ public class BoardDAO {
 		return vos;
 	}
 
+	// 댓글 입력하기
 	public String setReplyInputOk(BoardReplyVO replyVo) {
 		String res = "0";
 		try {
-			sql = "insert into boardReply values (default,?,?,?,default,?,?);";
+			sql = "insert into boardReply values (default,?,?,?,default,?,?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, replyVo.getBoardIdx());
 			pstmt.setString(2, replyVo.getMid());
@@ -305,17 +297,16 @@ public class BoardDAO {
 			pstmt.setString(4, replyVo.getHostIp());
 			pstmt.setString(5, replyVo.getContent());
 			pstmt.executeUpdate();
-			res="1";
+			res = "1";
 		} catch (SQLException e) {
 			System.out.println("SQL 에러 : " + e.getMessage());
 		} finally {
 			getConn.pstmtClose();
 		}
-		
 		return res;
 	}
 
-	//댓글 가져오기
+	// 댓글 가져오기
 	public ArrayList<BoardReplyVO> getBoReply(int idx) {
 		ArrayList<BoardReplyVO> replyVos = new ArrayList<>();
 		try {
@@ -336,13 +327,11 @@ public class BoardDAO {
 				
 				replyVos.add(replyVo);
 			}
-			
 		} catch (SQLException e) {
 			System.out.println("SQL 에러 : " + e.getMessage());
 		} finally {
 			getConn.rsClose();
 		}
-		
 		return replyVos;
 	}
 
@@ -350,7 +339,7 @@ public class BoardDAO {
 	public String setBoReplyDeleteOk(int idx) {
 		String res = "0";
 		try {
-			sql = "delete from boardReply where idx = ? ";
+			sql = "delete from boardReply where idx = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, idx);
 			pstmt.executeUpdate();
@@ -360,28 +349,7 @@ public class BoardDAO {
 		} finally {
 			getConn.pstmtClose();
 		}
-		
 		return res;
 	}
 
-	// 삭제하기전 댓글 있는지 확인하기, 있으면 삭제 X
-	public int getReplycount(int idx) {
-		vo = new BoardVO();
-		int cnt = 0;
-		try {
-			sql = "SELECT count(*) as replyCnt FROM boardReply WHERE boardIdx = ?";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, idx);
-			rs = pstmt.executeQuery();
-			
-			rs.next();
-			cnt = rs.getInt("replyCnt");
-		} catch (SQLException e) {
-			System.out.println("SQL 에러 : " + e.getMessage());
-		} finally {
-			getConn.rsClose();
-			System.out.println("cnt : " + cnt);
-		}
-		return cnt;
-	}
 }

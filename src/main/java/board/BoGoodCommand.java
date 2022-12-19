@@ -24,7 +24,7 @@ public class BoGoodCommand implements BoardInterface {
 		if(goodIdx == null) {
 			goodIdx = new ArrayList<String>();
 		}
-		String imsiGoodIdx = "boardGood" + idx;   // 게시판이나 자료실을 따로 분류하기 위해 idx와 board라는 명칭을 붙혀준다
+		String imsiGoodIdx = "boardGood" + idx;
 		if(!goodIdx.contains(imsiGoodIdx)) {
 			dao.setBoGood(idx);
 			goodIdx.add(imsiGoodIdx);

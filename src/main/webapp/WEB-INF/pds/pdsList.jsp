@@ -167,6 +167,7 @@
         </form>
       </td>
       <td>
+      
       <!-- 검색기 처리 시작  -->
 				<div class="container text-left">
 				  <form name="searchForm" method="post" action="${ctp}/pdsSearch.pds">
@@ -183,6 +184,7 @@
 				  </form>
 				</div>
 			<!-- 검색기 처리 끝  -->
+			
       </td>
       <td class="text-right">
         <a href="${ctp}/pdsInput.pds?part=${part}" class="btn btn-success">자료올리기</a>

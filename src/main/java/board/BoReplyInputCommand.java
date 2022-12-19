@@ -29,6 +29,6 @@ public class BoReplyInputCommand implements BoardInterface {
 		String res = dao.setReplyInputOk(replyVo);
 		
 		response.getWriter().write(res);
-		
 	}
+
 }
